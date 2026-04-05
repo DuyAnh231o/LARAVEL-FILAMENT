@@ -2,6 +2,15 @@
 
 namespace App\Filament\Resources;
 
+use Illuminate\Support\Str;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Grid;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
@@ -19,12 +28,23 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+
+     protected static ?string $slug = '23810310238-products';
    public static function form(Form $form): Form
 {
     return $form->schema([
         Grid::make(2)->schema([
-            TextInput::make('name')->required(),
-
+            TextInput::make('name')
+    ->required()
+    ->live(onBlur: true)
+    ->afterStateUpdated(function ($state, callable $set) {
+        $set('slug', Str::slug($state));
+    }),
+TextInput::make('slug')
+    ->required()
+    ->disabled()
+    ->dehydrated(),
+    
             TextInput::make('price')
                 ->numeric()
                 ->minValue(0)
